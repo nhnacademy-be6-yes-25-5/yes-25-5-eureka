@@ -59,11 +59,14 @@ jobs:
           
             RUNNING_CONTAINER=$(docker ps -q --filter "name=eureka-app")
             if [ -n "$RUNNING_CONTAINER" ]; then
+              echo "기존 'eureka-app' 컨테이너를 중지합니다..."
               docker stop $RUNNING_CONTAINER
+              echo "기존 'eureka-app' 컨테이너를 삭제합니다..."
               docker rm $RUNNING_CONTAINER
             fi
           
-            docker run -d -p 8761:8761 --name eureka-app eureka-app
+            echo "새로운 'eureka-app' 컨테이너를 실행합니다..."
+            docker run -d -p 8060:8060 --name eureka-app eureka-app
           EOF
 
       - name: Send Deployment Status to Dooray
