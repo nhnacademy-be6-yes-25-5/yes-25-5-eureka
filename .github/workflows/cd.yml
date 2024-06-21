@@ -1,4 +1,4 @@
-name: Java CD with Maven
+name: Java CD with Docker
 
 on:
   push:
@@ -55,24 +55,10 @@ jobs:
               echo "Dockerfile not found!"
               exit 1
             fi
-            docker build -t eureka-app .
-
-            RUNNING_CONTAINER=$(docker ps -q --filter "name=eureka-app")
-            if [ -n "$RUNNING_CONTAINER" ]; then
-              echo "기존 'eureka-app' 컨테이너를 중지합니다..."
-              docker stop $RUNNING_CONTAINER
-              echo "기존 'eureka-app' 컨테이너를 삭제합니다..."
-              docker rm $RUNNING_CONTAINER
-            fi
-
-            RUNNING_PROCESS=$(ss -ntlp | grep ':8761' | awk -F',' '{print $2}' | cut -d'=' -f2 | cut -d']' -f1)
-            if [ -n "$RUNNING_PROCESS" ]; then
-              echo "포트 8761을 사용 중인 프로세스를 종료합니다..."
-              kill -9 $RUNNING_PROCESS
-            fi
-
-            echo "새로운 'eureka-app' 컨테이너를 실행합니다..."
-            docker run -d -p 8761:8761 --name eureka-app eureka-app
+            docker build -t my-app .
+            docker stop my-app || true
+            docker rm my-app || true
+            docker run -d -p 8080:8080 --name my-app my-app
           EOF
 
       - name: Send Deployment Status to Dooray
@@ -87,7 +73,7 @@ jobs:
           script: |
             const webhookUrl = process.env.DOORAY_WEBHOOK_URL;
             const payload = {
-              botName: "유레카 회원 서버 Bot",
+              botName: "유레카 서버 Bot",
               botIconImage: "https://www.tistory.com/favicon.ico",
               text: "유레카 서버의 배포가 성공적으로 완료되었습니다!",
               attachments: [
@@ -144,7 +130,3 @@ jobs:
               },
               body: JSON.stringify(payload)
             });
-
-            if (!response.ok) {
-              throw new Error(`Failed to send webhook: ${response.statusText}`);
-            }
