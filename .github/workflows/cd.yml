@@ -56,7 +56,7 @@ jobs:
               exit 1
             fi
             docker build -t eureka-app .
-          
+
             RUNNING_CONTAINER=$(docker ps -q --filter "name=eureka-app")
             if [ -n "$RUNNING_CONTAINER" ]; then
               echo "기존 'eureka-app' 컨테이너를 중지합니다..."
@@ -64,9 +64,15 @@ jobs:
               echo "기존 'eureka-app' 컨테이너를 삭제합니다..."
               docker rm $RUNNING_CONTAINER
             fi
-          
+
+            RUNNING_PROCESS=$(ss -ntlp | grep ':8761' | awk -F',' '{print $2}' | cut -d'=' -f2 | cut -d']' -f1)
+            if [ -n "$RUNNING_PROCESS" ]; then
+              echo "포트 8761을 사용 중인 프로세스를 종료합니다..."
+              kill -9 $RUNNING_PROCESS
+            fi
+
             echo "새로운 'eureka-app' 컨테이너를 실행합니다..."
-            docker run -d -p 8060:8060 --name eureka-app eureka-app
+            docker run -d -p 8761:8761 --name eureka-app eureka-app
           EOF
 
       - name: Send Deployment Status to Dooray
