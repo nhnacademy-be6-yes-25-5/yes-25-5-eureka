@@ -63,7 +63,7 @@ jobs:
               docker rm $RUNNING_CONTAINER
             fi
           
-            docker run -d -p 8060:8060 --name eureka-app eureka-app
+            docker run -d -p 8761:8761 --name eureka-app eureka-app
           EOF
 
       - name: Send Deployment Status to Dooray
