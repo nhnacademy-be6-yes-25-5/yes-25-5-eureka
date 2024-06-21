@@ -114,7 +114,7 @@ jobs:
           script: |
             const webhookUrl = process.env.DOORAY_WEBHOOK_URL;
             const payload = {
-              botName: "유레카 서버 Bot",
+              botName: "유레카서버 Bot",
               botIconImage: "https://www.tistory.com/favicon.ico",
               text: "유레카 서버의 Pull Request가 실패했어요...",
               attachments: [
