@@ -55,13 +55,13 @@ jobs:
               echo "Dockerfile not found!"
               exit 1
             fi
-            docker build -t eureka-app .
+            docker build -t books-app .
 
-            RUNNING_CONTAINER=$(docker ps -q --filter "name=eureka-app")
+            RUNNING_CONTAINER=$(docker ps -q --filter "name=books-app")
             if [ -n "$RUNNING_CONTAINER" ]; then
-              echo "기존 'eureka-app' 컨테이너를 중지합니다..."
+              echo "기존 'books-app' 컨테이너를 중지합니다..."
               docker stop $RUNNING_CONTAINER
-              echo "기존 'eureka-app' 컨테이너를 삭제합니다..."
+              echo "기존 'books-app' 컨테이너를 삭제합니다..."
               docker rm $RUNNING_CONTAINER
             fi
 
@@ -71,8 +71,8 @@ jobs:
               kill -9 $RUNNING_PROCESS
             fi
 
-            echo "새로운 'eureka-app' 컨테이너를 실행합니다..."
-            docker run -d -p 8761:8761 --name eureka-app eureka-app
+            echo "새로운 'books-app' 컨테이너를 실행합니다..."
+            docker run -d -p 8761:8761 --name books-app books-app
           EOF
 
       - name: Send Deployment Status to Dooray
