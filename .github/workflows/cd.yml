@@ -56,8 +56,13 @@ jobs:
               exit 1
             fi
             docker build -t books-app .
-            docker stop books-app || true
-            docker rm books-app || true
+          
+            RUNNING_CONTAINER=$(docker ps -q --filter "name=books-app")
+            if [ -n "$RUNNING_CONTAINER" ]; then
+              docker stop $RUNNING_CONTAINER
+              docker rm $RUNNING_CONTAINER
+            fi
+          
             docker run -d -p 8060:8060 --name books-app books-app
           EOF
 
