@@ -23,15 +23,15 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-app-ci .
+          docker build -t eureka-app .
 
       - name: Run Maven tests in Docker
         run: |
-          docker run --rm my-app-ci mvn clean verify
+          docker run --rm eureka-app mvn clean verify
 
       - name: Build Maven project in Docker
         run: |
-          docker run --rm -v "$(pwd)":/app -w /app my-app-ci mvn package
+          docker run --rm -v "$(pwd)":/app -w /app eureka-app mvn package
 
       - name: Check if JAR file exists
         run: |
