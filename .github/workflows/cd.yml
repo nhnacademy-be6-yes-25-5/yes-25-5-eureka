@@ -49,17 +49,18 @@ jobs:
           REMOTE_HOST: ${{ secrets.SSH_HOST }}
           REMOTE_DIR: ${{ secrets.REMOTE_DIR }}
         run: |
-          ssh -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} << EOF
+          ssh -i ~/.ssh/github_rsa -o StrictHostKeyChecking=no ${REMOTE_USER}@${REMOTE_HOST} "
+            set -e
             cd ${REMOTE_DIR}
             if [ ! -f Dockerfile ]; then
-              echo "Dockerfile not found!"
+              echo 'Dockerfile not found!'
               exit 1
             fi
-            docker build -t my-app .
-            docker stop my-app || true
-            docker rm my-app || true
-            docker run -d -p 8080:8080 --name my-app my-app
-          EOF
+            docker build -t eureka-app .
+            docker stop eureka-app || true
+            docker rm eureka-app || true
+            docker run -d -p 8761:8761 --name eureka-app eureka-app
+          "
 
       - name: Send Deployment Status to Dooray
         if: success()
@@ -130,3 +131,7 @@ jobs:
               },
               body: JSON.stringify(payload)
             });
+
+            if (!response.ok) {
+              throw new Error(`Failed to send webhook: ${response.statusText}`);
+            }
