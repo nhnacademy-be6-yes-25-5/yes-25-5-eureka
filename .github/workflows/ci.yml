@@ -21,25 +21,24 @@ jobs:
             exit 1
           fi
 
-      - name: Build Maven project
-        run: |
-          mvn clean package
-
-      - name: Verify JAR file exists
-        run: |
-          if [ ! -f target/*.jar ]; then
-            echo "JAR file not found!"
-            exit 1
-          fi
-
       - name: Build Docker image
         run: |
-          cp target/*.jar .  # Copy the JAR file to the current directory
           docker build -t eureka-app .
 
       - name: Run Maven tests in Docker
         run: |
           docker run --rm eureka-app mvn clean verify
+
+      - name: Build Maven project in Docker
+        run: |
+          docker run --rm -v "$(pwd)":/app -w /app eureka-app mvn package
+
+      - name: Check if JAR file exists
+        run: |
+          if [ ! -f target/*.jar ]; then
+            echo "JAR file not found!"
+            exit 1
+          fi
 
       - name: Publish Unit Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
@@ -131,6 +130,6 @@ jobs:
               body: JSON.stringify(payload)
             });
 
-            if (!response.ok,  {
+            if (!response.ok) {
               throw new Error(`Failed to send webhook: ${response.statusText}`);
             }
