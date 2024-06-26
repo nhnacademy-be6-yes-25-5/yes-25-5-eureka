@@ -61,7 +61,13 @@ jobs:
             docker build -t eureka-app .
             docker stop eureka-app || true
             docker rm eureka-app || true
-            docker run -d -p 8761:8761 --name eureka-app eureka-app
+
+            # Check if the network exists, if not create it
+            if ! docker network ls | grep -q yes255-network; then
+              docker network create yes255-network
+            fi
+
+            docker run -d -p 8761:8761 --name eureka-app --network yes255-network eureka-app
           "
 
       - name: Send Deployment Status to Dooray
